@@ -1,0 +1,55 @@
+site_name: Sofia Engine
+site_description: Offline-First Edge Intelligence for Industrial Telemetry, Condition Monitoring & Safe Technical Automation
+site_author: Rootcastle Engineering & Innovation
+site_url: https://rootcastleco.github.io/sofia-rl/
+repo_url: https://github.com/rootcastleco/sofia-rl
+repo_name: rootcastleco/sofia-rl
+
+theme:
+  name: material
+  palette:
+    - scheme: slate
+      primary: blue grey
+      accent: deep orange
+  features:
+    - navigation.instant
+    - navigation.tracking
+    - navigation.sections
+    - navigation.expand
+    - content.code.copy
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - tables
+  - toc:
+      permalink: true
+
+extra_javascript:
+  - https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js
+  - https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js
+
+extra_css:
+  - https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css
+
+nav:
+  - Overview: Home.md
+  - Architecture: System-Architecture.md
+  - Digital Signal Processing: Digital-Signal-Processing.md
+  - Condition Monitoring & Health: Condition-Monitoring-&-Machine-Health.md
+  - Safety Gate & Policy Engine: Safety-Gate-&-Policy-Engine.md
+  - Embedded C99 & TinyML: Embedded-C99-&-TinyML.md
+  - Telemetry Adapters: Telemetry-Adapters-&-Protocols.md
+  - CLI & Operations: CLI-&-Developer-Operations.md
+  - Security & Threat Model: Security-Policy-&-Threat-Model.md
