@@ -45,6 +45,7 @@ extra_css:
 
 nav:
   - Overview: Home.md
+  - AI Engine & Copilot: AI-Engine-&-Copilot.md
   - Architecture: System-Architecture.md
   - Digital Signal Processing: Digital-Signal-Processing.md
   - Condition Monitoring & Health: Condition-Monitoring-&-Machine-Health.md

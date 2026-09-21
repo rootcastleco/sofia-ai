@@ -1,0 +1,50 @@
+{
+  "name": "@rootcastle/sofia-engine",
+  "version": "2.0.0",
+  "description": "Offline-first edge intelligence runtime & TypeScript SDK for industrial telemetry, condition monitoring, DSP, and safe technical automation.",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE",
+    "NOTICE"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "test": "node --test dist/**/*.test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rootcastleco/sofia-rl.git"
+  },
+  "keywords": [
+    "edge-ai",
+    "industrial-ai",
+    "condition-monitoring",
+    "vibration-analysis",
+    "digital-signal-processing",
+    "dsp",
+    "predictive-maintenance",
+    "anomaly-detection",
+    "tinyml",
+    "rootcastle"
+  ],
+  "author": "Rootcastle Engineering & Innovation <https://rootcastle.com/>",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/rootcastleco/sofia-rl/issues"
+  },
+  "homepage": "https://github.com/rootcastleco/sofia-rl#readme",
+  "publishConfig": {
+    "access": "public"
+  }
+}

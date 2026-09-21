@@ -22,6 +22,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import platform
 import sys
 from collections.abc import Sequence
@@ -116,6 +117,14 @@ def build_parser() -> argparse.ArgumentParser:
     config.add_argument("--config", default=None, help="Sofia config JSON path")
     config.add_argument("--json", action="store_true", help="emit JSON")
 
+    ask = subparsers.add_parser("ask", help="consult Sofia AI Copilot with NVIDIA or OpenRouter")
+    ask.add_argument("question", help="engineering or diagnostic question")
+    ask.add_argument("--device", default="unknown-device", help="target device id")
+    ask.add_argument("--provider", choices=("auto", "nvidia", "openrouter", "offline"),
+                     default="auto", help="AI provider (default: auto)")
+    ask.add_argument("--model", default=None, help="custom model name")
+    ask.add_argument("--json", action="store_true", help="emit JSON")
+
     return parser
 
 
@@ -202,6 +211,28 @@ def _dependency_checks() -> list[dict[str, Any]]:
         probe("torch", "torch", "PyTorch backend and experimental RL"),
         probe("fastapi", "api", "optional HTTP API"),
         probe("cryptography", "security", "optional manifest signature verification"),
+        {
+            "name": "NVIDIA_API_KEY",
+            "extra": "copilot",
+            "purpose": "NVIDIA NIM AI Copilot backend",
+            "available": bool(
+                os.environ.get("NVIDIA_API_KEY") or os.environ.get("SOFIA_NVIDIA_API_KEY")
+            ),
+            "version": "configured"
+            if (os.environ.get("NVIDIA_API_KEY") or os.environ.get("SOFIA_NVIDIA_API_KEY"))
+            else None,
+        },
+        {
+            "name": "OPENROUTER_API_KEY",
+            "extra": "copilot",
+            "purpose": "OpenRouter AI Copilot backend",
+            "available": bool(
+                os.environ.get("OPENROUTER_API_KEY") or os.environ.get("SOFIA_OPENROUTER_API_KEY")
+            ),
+            "version": "configured"
+            if (os.environ.get("OPENROUTER_API_KEY") or os.environ.get("SOFIA_OPENROUTER_API_KEY"))
+            else None,
+        },
     ]
 
 
@@ -472,6 +503,24 @@ def cmd_config(args: argparse.Namespace) -> int:
     return _emit(payload, args.json, "Configuration")
 
 
+def cmd_ask(args: argparse.Namespace) -> int:
+    """Consult Sofia AI Copilot."""
+    from ..copilot.base import CopilotRequest
+    from ..copilot.providers import AIEngine
+
+    engine = AIEngine(provider=args.provider, model=args.model, allow_provider_text=True)
+    req = CopilotRequest(
+        question=args.question,
+        device_id=args.device,
+        audience="engineer",
+    )
+    res = engine.ask(req)
+    if args.json:
+        return _emit(res.to_dict(), True)
+    print(res.text)
+    return EXIT_OK
+
+
 _COMMANDS = {
     "info": cmd_info,
     "doctor": cmd_doctor,
@@ -482,6 +531,7 @@ _COMMANDS = {
     "models": cmd_models,
     "devices": cmd_devices,
     "config": cmd_config,
+    "ask": cmd_ask,
 }
 
 

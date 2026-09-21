@@ -1,0 +1,30 @@
+Sofia Engine
+Copyright 2026 Rootcastle Engineering & Innovation
+Project home: https://github.com/rootcastleco/sofia-rl
+
+This product includes software developed by the Rootcastle Engineering &
+Innovation team.
+
+========================================================================
+Third-party notices
+========================================================================
+
+Sofia Engine depends at runtime on NumPy, and optionally on third-party
+packages for integrations (MQTT, Modbus, serial, ONNX Runtime, PyTorch,
+FastAPI/uvicorn, and the MkDocs documentation toolchain). Their respective
+license and copyright notices apply:
+
+- NumPy — BSD 3-Clause
+- paho-mqtt / pymodbus / pyserial — their respective licenses
+- ONNX Runtime — MIT
+- PyTorch — BSD 3-Clause
+- FastAPI / uvicorn — MIT
+- MkDocs — BSD 2-Clause
+
+The embedded C reference implementation (embedded/) is original work and is
+released under the same Apache-2.0 license as the rest of the project.
+
+The test suite makes use of pytest, pytest-cov, Hypothesis, ruff and mypy,
+which are licensed under their respective permissive licenses.
+
+No vendored copies of third-party source code are shipped in this repository.

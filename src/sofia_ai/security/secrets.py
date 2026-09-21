@@ -61,6 +61,8 @@ def secret(name: str | None) -> str | None:
         return None
     value = os.environ.get(env_name(name))
     if value is None:
+        value = os.environ.get(name.strip())
+    if value is None:
         return None
     stripped = value.strip()
     return stripped or None
