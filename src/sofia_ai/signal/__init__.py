@@ -6,7 +6,23 @@ no global state. The frequency axis always comes from the sample rate.
 
 from __future__ import annotations
 
+from .acoustic import (
+    AcousticEmissionFeatures,
+    compute_acoustic_emission_features,
+    compute_cavitation_index,
+)
 from .detrend import detrend, detrend_linear, polynomial_trend
+from .electrical import (
+    ElectricalPowerMetrics,
+    HarmonicSpectrum,
+    PowerQualityEvent,
+    SymmetricalComponentsResult,
+    analyze_harmonics_50,
+    compute_electrical_power_metrics,
+    compute_symmetrical_components,
+    compute_thd,
+    detect_power_quality_events,
+)
 from .envelope import amplitude_envelope, envelope_spectrum, hilbert_analytic
 from .filters import (
     Biquad,
@@ -44,10 +60,16 @@ from .windowing import (
 )
 
 __all__ = [
+    "AcousticEmissionFeatures",
     "Biquad",
+    "ElectricalPowerMetrics",
+    "HarmonicSpectrum",
+    "PowerQualityEvent",
     "Spectrum",
+    "SymmetricalComponentsResult",
     "WindowSpec",
     "amplitude_envelope",
+    "analyze_harmonics_50",
     "apply_biquad",
     "apply_cascade",
     "apply_window_function",
@@ -56,7 +78,13 @@ __all__ = [
     "butterworth_bandpass",
     "butterworth_highpass",
     "butterworth_lowpass",
+    "compute_acoustic_emission_features",
+    "compute_cavitation_index",
+    "compute_electrical_power_metrics",
+    "compute_symmetrical_components",
+    "compute_thd",
     "decimate",
+    "detect_power_quality_events",
     "detrend",
     "detrend_linear",
     "envelope_spectrum",

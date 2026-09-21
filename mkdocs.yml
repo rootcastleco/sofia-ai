@@ -47,7 +47,9 @@ nav:
   - Overview: Home.md
   - AI Engine & Copilot: AI-Engine-&-Copilot.md
   - Architecture: System-Architecture.md
+  - Multi-Domain Signal Processing: Multi-Domain-Signal-Processing.md
   - Digital Signal Processing: Digital-Signal-Processing.md
+  - Quantum Computing Emulation: Quantum-Computing-Emulation.md
   - Condition Monitoring & Health: Condition-Monitoring-&-Machine-Health.md
   - Safety Gate & Policy Engine: Safety-Gate-&-Policy-Engine.md
   - Embedded C99 & TinyML: Embedded-C99-&-TinyML.md

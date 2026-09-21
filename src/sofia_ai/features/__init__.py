@@ -14,6 +14,14 @@ from .extractor import (
     FeatureExtractor,
     extract_from_array,
 )
+from .multidomain import (
+    MULTIDOMAIN_EXTRACTOR_ID,
+    MULTIDOMAIN_EXTRACTOR_VERSION,
+    extract_acoustic_features,
+    extract_electrical_features,
+    extract_motion_features,
+    extract_process_features,
+)
 from .rotating import (
     OrderSpec,
     bearing_band_energies,
@@ -43,6 +51,8 @@ __all__ = [
     "EXTRACTOR_ID",
     "EXTRACTOR_VERSION",
     "FEATURE_NAMES",
+    "MULTIDOMAIN_EXTRACTOR_ID",
+    "MULTIDOMAIN_EXTRACTOR_VERSION",
     "SPECTRAL_FEATURE_NAMES",
     "STATISTICAL_FEATURE_NAMES",
     "FeatureExtractor",
@@ -51,7 +61,11 @@ __all__ = [
     "crest_factor",
     "energy",
     "envelope_analysis",
+    "extract_acoustic_features",
+    "extract_electrical_features",
     "extract_from_array",
+    "extract_motion_features",
+    "extract_process_features",
     "harmonic_energies",
     "kurtosis",
     "orders_from_rpm",
