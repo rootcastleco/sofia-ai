@@ -186,7 +186,7 @@ class TestPackaging:
     def test_version_matches_package(self) -> None:
         import sofia_ai
 
-        assert sofia_ai.__version__ == "2.0.0"
+        assert sofia_ai.__version__ == "2.2.0"
 
     def test_license_file_is_apache(self) -> None:
         from pathlib import Path

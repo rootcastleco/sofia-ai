@@ -47,7 +47,7 @@ class TestInfo:
     def test_json(self, capsys) -> None:
         assert main(["info", "--json"]) == EXIT_OK
         payload = json.loads(capsys.readouterr().out)
-        assert payload["sofia_version"] == "2.0.0"
+        assert payload["sofia_version"] == "2.2.0"
         assert payload["capabilities"]["offline_first"] is True
 
 

@@ -41,7 +41,7 @@ Pre-2.0 imports (``SofiaModel``, ``QuantumNeuralEngine``, ``NLPProcessor``,
 
 from __future__ import annotations
 
-__version__ = "2.0.0"
+__version__ = "2.2.0"
 __author__ = "Rootcastle Engineering & Innovation"
 __license__ = "Apache-2.0"
 
@@ -50,10 +50,11 @@ CAPABILITIES: dict[str, object] = {
     "version": __version__,
     "license": __license__,
     "organization": "Rootcastle Engineering & Innovation",
+    "scientific_ai": True,
     "deployment_classes": {
         "A_workstation_server": "VERIFIED",
         "B_edge_linux": "PARTIALLY VERIFIED",
-        "C_microcontroller": "NOT VERIFIED",
+        "C_microcontroller": "PARTIALLY VERIFIED",
     },
     "telemetry_adapters": [
         "csv", "jsonl", "memory", "replay", "synthetic", "mqtt", "modbus", "serial",
@@ -61,6 +62,13 @@ CAPABILITIES: dict[str, object] = {
     "inference_backends": [
         "threshold", "zscore", "mad", "ewma", "iqr", "cusum", "callable", "onnx", "torch",
     ],
+    "dsp_domains": [
+        "vibration", "electrical", "acoustic", "imu_kinematics",
+    ],
+    "learning_subsystems": [
+        "asm_neural_self_training", "auto_finetune", "reinforcement_learning",
+    ],
+    "quantum_emulation": True,
     "offline_first": True,
     "functional_safety_certified": False,
 }

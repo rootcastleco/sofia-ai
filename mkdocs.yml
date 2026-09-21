@@ -46,6 +46,8 @@ extra_css:
 nav:
   - Overview: Home.md
   - AI Engine & Copilot: AI-Engine-&-Copilot.md
+  - In-Situ Assembly Neural Engine: Assembly-Neural-Engine.md
+  - Automatic Fine-Tuning: Automatic-Fine-Tuning.md
   - Architecture: System-Architecture.md
   - Multi-Domain Signal Processing: Multi-Domain-Signal-Processing.md
   - Digital Signal Processing: Digital-Signal-Processing.md

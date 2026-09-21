@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "sofia-engine"
-version = "2.0.0"
-description = "Open-source edge intelligence engine for industrial telemetry, machine health, embedded ML and safe technical automation"
+version = "2.2.0"
+description = "Open-source scientific AI and edge intelligence engine for industrial telemetry, multi-domain DSP, assembly self-training, and safe technical automation"
 readme = "README.md"
 requires-python = ">=3.11"
 license = "Apache-2.0"

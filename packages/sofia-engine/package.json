@@ -1,7 +1,7 @@
 {
   "name": "@rootcastle/sofia-engine",
-  "version": "2.1.0",
-  "description": "Offline-first edge intelligence runtime & TypeScript SDK for industrial telemetry, condition monitoring, DSP, and safe technical automation.",
+  "version": "2.2.0",
+  "description": "Offline-first scientific AI runtime & TypeScript SDK for industrial telemetry, condition monitoring, DSP, assembly self-training, and safe technical automation.",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",

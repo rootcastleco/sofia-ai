@@ -14,3 +14,4 @@ export * from "./inference/detectors.js";
 export * from "./diagnostics/engine.js";
 export * from "./decision/policy.js";
 export * from "./copilot/providers.js";
+export * from "./learning/index.js";
