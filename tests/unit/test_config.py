@@ -153,7 +153,8 @@ class TestPackaging:
         assert project["license"] == "Apache-2.0"
         assert "rootcastleco/sofia-rl" in project["urls"]["Repository"]
         assert project["requires-python"] == ">=3.11"
-        assert "Apache Software License" in " ".join(project["classifiers"])
+        assert "License" not in " ".join(project["classifiers"])  # PEP 639
+        assert project["license"] == "Apache-2.0"  # SPDX, single source of truth
 
     def test_core_dependency_is_minimal(self) -> None:
         import tomllib
