@@ -1,0 +1,234 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sofia-engine"
+version = "2.0.0"
+description = "Open-source edge intelligence engine for industrial telemetry, machine health, embedded ML and safe technical automation"
+readme = "README.md"
+requires-python = ">=3.11"
+license = "Apache-2.0"
+license-files = ["LICENSE", "NOTICE"]
+authors = [
+    { name = "Rootcastle Engineering & Innovation" },
+]
+maintainers = [
+    { name = "Rootcastle Engineering & Innovation" },
+]
+keywords = [
+    "edge-ai",
+    "edge-intelligence",
+    "industrial-ai",
+    "industrial-iot",
+    "iiot",
+    "telemetry",
+    "machine-health",
+    "condition-monitoring",
+    "predictive-maintenance",
+    "anomaly-detection",
+    "vibration-analysis",
+    "signal-processing",
+    "time-series",
+    "tinyml",
+    "embedded-ai",
+    "mqtt",
+    "modbus",
+    "can-bus",
+    "opc-ua",
+    "onnx",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Manufacturing",
+    "Intended Audience :: Science/Research",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Scientific/Engineering :: Information Analysis",
+    "Topic :: System :: Monitoring",
+    "Typing :: Typed",
+]
+# Minimal runtime: numerical core only. Everything else is an extra.
+dependencies = [
+    "numpy>=1.24",
+]
+
+[project.optional-dependencies]
+mqtt = ["paho-mqtt>=1.6.1"]
+modbus = ["pymodbus>=3.5"]
+serial = ["pyserial>=3.5"]
+onnx = ["onnxruntime>=1.15"]
+torch = ["torch>=2.0"]
+api = ["fastapi>=0.104", "uvicorn>=0.24"]
+industrial = ["sofia-engine[mqtt,modbus,serial]"]
+dev = [
+    "pytest>=7.4",
+    "pytest-cov>=4.1",
+    "hypothesis>=6.90",
+    "ruff>=0.5",
+    "mypy>=1.6",
+    "build>=1.0",
+    "pip-audit>=2.6",
+]
+docs = [
+    "mkdocs>=1.6,<2",
+    "mkdocs-get-deps>=0.2",
+]
+
+[project.urls]
+Homepage = "https://github.com/rootcastleco/sofia-rl"
+Documentation = "https://rootcastleco.github.io/sofia-rl/"
+Repository = "https://github.com/rootcastleco/sofia-rl"
+Issues = "https://github.com/rootcastleco/sofia-rl/issues"
+Changelog = "https://github.com/rootcastleco/sofia-rl/blob/main/CHANGELOG.md"
+Security = "https://github.com/rootcastleco/sofia-rl/blob/main/SECURITY.md"
+
+[project.scripts]
+sofia = "sofia_ai.cli.main:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+sofia_ai = ["py.typed", "data/*.json"]
+
+# ---------------------------------------------------------------------------
+# pytest
+# ---------------------------------------------------------------------------
+[tool.pytest.ini_options]
+minversion = "7.4"
+testpaths = ["tests"]
+addopts = [
+    "--strict-markers",
+    "--strict-config",
+    "-ra",
+]
+markers = [
+    "unit: unit tests",
+    "contract: interface contract tests",
+    "integration: end-to-end pipeline tests",
+    "negative: failure-mode tests",
+    "property: hypothesis property tests",
+    "architecture: module boundary tests",
+    "security: security control tests",
+    "compat: backward-compatibility tests",
+    "embedded: embedded golden-vector tests",
+    "slow: tests that take more than a few seconds",
+    "requires_cc: requires a C compiler",
+    "requires_broker: requires a live MQTT/Modbus broker",
+]
+filterwarnings = [
+    "ignore::DeprecationWarning:sofia_ai.compat",
+    "ignore::DeprecationWarning:sofia_ai",
+]
+
+# ---------------------------------------------------------------------------
+# coverage
+# ---------------------------------------------------------------------------
+[tool.coverage.run]
+branch = true
+source = ["sofia_ai"]
+omit = [
+    "*/experimental/*",
+    "*/compat/*",
+    "*/copilot/legacy_nlp.py",
+]
+
+[tool.coverage.report]
+show_missing = true
+skip_empty = true
+precision = 2
+fail_under = 85
+exclude_also = [
+    "if TYPE_CHECKING:",
+    "raise NotImplementedError",
+    "@(abc\\.)?abstractmethod",
+    "\\.\\.\\.",
+]
+
+# ---------------------------------------------------------------------------
+# ruff
+# ---------------------------------------------------------------------------
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+src = ["src", "tests", "examples"]
+
+[tool.ruff.lint]
+select = [
+    "E", "W",      # pycodestyle
+    "F",           # pyflakes
+    "I",           # isort
+    "B",           # flake8-bugbear
+    "C4",          # comprehensions
+    "UP",          # pyupgrade
+    "SIM",         # simplify
+    "TID",         # tidy imports
+    "RUF",         # ruff-specific
+    "S",           # bandit
+    "PL",          # pylint
+    "TRY",         # tryceratops
+]
+ignore = [
+    "PLR0913",   # many args: configuration dataclasses and detectors need them
+    "PLR2004",   # magic values: test and DSP tolerances
+    "TRY003",    # long messages: typed errors carry guidance text
+    "S101",      # assert: tests
+    "E501",      # line length handled by formatter
+    "PLC0415",   # function-local imports are deliberate: keeps `sofia --help`
+                 # fast, keeps optional integrations out of the core import path,
+                 # and breaks import cycles between sibling modules
+    "TID252",    # relative imports inside sofia_ai are the convention; the
+                 # package ships as a src-layout unit, not a flat namespace
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["S", "PLR2004", "B011", "SIM300"]
+"examples/*" = ["S", "T201"]
+"src/sofia_ai/experimental/*" = ["PL", "S"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["sofia_ai"]
+
+[tool.ruff.lint.pylint]
+max-branches = 12
+max-returns = 12
+max-statements = 60
+
+# ---------------------------------------------------------------------------
+# mypy
+# ---------------------------------------------------------------------------
+[tool.mypy]
+# Reminder: python_version here only controls mypy's syntax/typing target, not the
+# runtime floor (requires-python >= 3.11). NumPy >= 2.5 ships stubs that use PEP 695
+# `type` statements, which mypy only parses at a 3.12 target. Ruff guards the 3.11
+# syntax floor separately via target-version = "py311".
+python_version = "3.12"
+mypy_path = "src"
+packages = ["sofia_ai"]
+strict = true
+warn_unused_configs = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+disallow_any_generics = false
+show_error_codes = true
+pretty = true
+
+[[tool.mypy.overrides]]
+module = [
+    "numpy.*",
+    "numpy.typing",
+    "paho.*",
+    "pymodbus.*",
+    "serial.*",
+    "onnxruntime.*",
+    "torch.*",
+    "cryptography.*",
+]
+ignore_missing_imports = true

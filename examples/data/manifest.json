@@ -1,0 +1,18 @@
+{
+  "channels": [
+    "vibration_x",
+    "temperature",
+    "rpm"
+  ],
+  "n_samples": 4096,
+  "note": "Synthetic data generated deterministically for examples and tests. It is not measured machine data and carries no diagnostic validity.",
+  "sample_rate": 1000.0,
+  "seed": 20240921,
+  "shaft_hz": 25.0,
+  "start_time": 1700000000.0,
+  "units": {
+    "rpm": "RPM",
+    "temperature": "C",
+    "vibration_x": "g"
+  }
+}
