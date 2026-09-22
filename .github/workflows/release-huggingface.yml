@@ -1,0 +1,42 @@
+name: Release to Hugging Face
+
+on:
+  release:
+    types: [published]
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  publish-huggingface:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout canonical source
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .
+          pip install huggingface_hub
+
+      - name: Run core verification tests
+        run: |
+          python -m pytest -o pythonpath=src tests/unit/test_dsp_golden.py tests/unit/test_contracts_v3.py tests/unit/test_model_manifest.py
+
+      - name: Publish approved artifacts to Hugging Face
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: |
+          python scripts/publish_huggingface.py
