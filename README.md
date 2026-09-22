@@ -5,6 +5,9 @@
 ### General Scientific AI, In-Situ Assembly Neural Self-Training & Multi-Domain Signal Intelligence Runtime
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
+[![DOI](https://img.shields.io/badge/DOI-10.57967%2Fhf%2F10549-blue.svg)](https://doi.org/10.57967/hf/10549)
+[![Hugging Face Model](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Model%20Registry-yellow.svg)](https://huggingface.co/rootcastleengineering/sofia)
+[![Hugging Face Bucket](https://img.shields.io/badge/%F0%9F%A4%97%20HF%20Bucket-Storage%20Bucket-orange.svg)](https://huggingface.co/buckets/rootcastleengineering/sofia-bucket)
 [![Python Version](https://img.shields.io/badge/python-3.11%20%7C%203.12%20%7C%203.13%20%7C%203.14-blue.svg)](pyproject.toml)
 [![NPM Version](https://img.shields.io/npm/v/@rootcastle/sofia-engine.svg?color=cb3837)](https://www.npmjs.com/package/@rootcastle/sofia-engine)
 [![Core Dependencies](https://img.shields.io/badge/runtime%20deps-NumPy%20only-brightgreen.svg)](pyproject.toml)
@@ -18,7 +21,7 @@
 [![Security Audited](https://img.shields.io/badge/security-threat%20modeled%20%7C%20no%20pickle-red.svg)](specs/001-sofia-engine-modernization/threat-model.md)
 [![Organization](https://img.shields.io/badge/developed%20by-Rootcastle%20Engineering-black.svg)](https://rootcastle.com/)
 
-[**Documentation**](https://rootcastleco.github.io/sofia-ai/) | [**GitHub Wiki**](https://github.com/rootcastleco/sofia-ai/wiki) | [**NPM Package**](https://www.npmjs.com/package/@rootcastle/sofia-engine) | [**REI SignalLab**](https://github.com/rootcastleco/rei-signallab) | [**Rootcastle**](https://rootcastle.com/)
+[**Documentation**](https://rootcastleco.github.io/sofia-ai/) | [**Hugging Face Model**](https://huggingface.co/rootcastleengineering/sofia) | [**Hugging Face Bucket**](https://huggingface.co/buckets/rootcastleengineering/sofia-bucket) | [**GitHub Wiki**](https://github.com/rootcastleco/sofia-ai/wiki) | [**NPM Package**](https://www.npmjs.com/package/@rootcastle/sofia-engine) | [**REI SignalLab**](https://github.com/rootcastleco/rei-signallab) | [**Rootcastle**](https://rootcastle.com/)
 
 ---
 
@@ -340,6 +343,30 @@ print(explanation)
 | **AI Copilot** | `SOFIA-COP-001` - `004` | NVIDIA NIM & OpenRouter integrations with offline deterministic fallback. |
 | **Safety Gate** | `SOFIA-SAFE-001` - `006` | Default DENY, operator approval gate, physical interlocks, Nonce/TTL protection. |
 | **Edge Resilience** | `SOFIA-EDGE-001` - `007` | Ring buffers, store-and-forward (64 MiB ceiling), reconnect backoff. |
+
+---
+
+## Hugging Face Model Registry & Storage Bucket
+
+Sofia Engine distributes its official release manifests, runtime specifications, reproducible inference examples, and checkpoint storage on Hugging Face:
+
+* **Hugging Face Model Registry**: [huggingface.co/rootcastleengineering/sofia](https://huggingface.co/rootcastleengineering/sofia)
+* **Hugging Face Storage Bucket**: [huggingface.co/buckets/rootcastleengineering/sofia-bucket](https://huggingface.co/buckets/rootcastleengineering/sofia-bucket)
+* **Digital Object Identifier (DOI)**: [10.57967/hf/10549](https://doi.org/10.57967/hf/10549)
+
+### Citation
+
+```bibtex
+@software{sofia_engine_2026,
+  author       = {{Rootcastle Engineering \& Innovation}},
+  title        = {Sofia Engine: Scientific \& Edge Intelligence Runtime},
+  year         = {2026},
+  version      = {3.0.0a1},
+  publisher    = {Hugging Face},
+  doi          = {10.57967/hf/10549},
+  url          = {https://huggingface.co/rootcastleengineering/sofia}
+}
+```
 
 ---
 
