@@ -2,10 +2,7 @@
 
 from __future__ import annotations
 
-import math
-
 import numpy as np
-import pytest
 
 from sofia_ai.signal.electrical import (
     analyze_harmonics_50,

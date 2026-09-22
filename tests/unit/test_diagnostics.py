@@ -245,7 +245,7 @@ class TestDiagnosticEngine:
         event = engine.evaluate(_context(score=8.0, confidence=0.9))
         assert event is not None
         payload = event.to_dict()
-        assert payload["contract_version"] == "2.0"
+        assert payload["contract_version"] == "3.0"
         assert payload["evidence"]
 
 

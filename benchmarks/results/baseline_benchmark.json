@@ -1,0 +1,83 @@
+{
+  "timestamp_utc": "2026-09-21T23:56:41.289504+00:00",
+  "environment": {
+    "os": "Windows",
+    "os_release": "11",
+    "os_version": "10.0.26200",
+    "machine": "AMD64",
+    "processor": "Intel64 Family 6 Model 165 Stepping 2, GenuineIntel",
+    "python_version": "3.12.10",
+    "python_compiler": "MSC v.1943 64 bit (AMD64)",
+    "python_implementation": "CPython"
+  },
+  "benchmarks": {
+    "import_time_ms": 342.76,
+    "fft_psd_1024": {
+      "n_iterations": 100,
+      "mean_us": 319.19,
+      "p50_us": 307.55,
+      "p95_us": 362.82,
+      "p99_us": 445.46,
+      "min_us": 303.3,
+      "max_us": 501.2
+    },
+    "fft_psd_4096": {
+      "n_iterations": 100,
+      "mean_us": 430.25,
+      "p50_us": 387.35,
+      "p95_us": 597.33,
+      "p99_us": 713.05,
+      "min_us": 378.7,
+      "max_us": 787.2
+    },
+    "analytic_envelope_2048": {
+      "n_iterations": 100,
+      "mean_us": 140.95,
+      "p50_us": 127.8,
+      "p95_us": 200.21,
+      "p99_us": 237.93,
+      "min_us": 126.6,
+      "max_us": 241.2
+    },
+    "feature_extraction_1024": {
+      "n_iterations": 100,
+      "mean_us": 2521.47,
+      "p50_us": 2415.45,
+      "p95_us": 3304.84,
+      "p99_us": 3490.95,
+      "min_us": 2165.0,
+      "max_us": 3554.8
+    },
+    "electrical_symmetrical_components": {
+      "n_iterations": 100,
+      "mean_us": 60.68,
+      "p50_us": 55.5,
+      "p95_us": 92.99,
+      "p99_us": 102.7,
+      "min_us": 54.7,
+      "max_us": 103.0
+    },
+    "sofia_vm_forward_inference": {
+      "n_iterations": 100,
+      "mean_us": 1751.24,
+      "p50_us": 1675.8,
+      "p95_us": 2210.2,
+      "p99_us": 2457.12,
+      "min_us": 1560.8,
+      "max_us": 2537.8
+    },
+    "sofia_vm_training_step": {
+      "n_iterations": 100,
+      "mean_us": 6609.69,
+      "p50_us": 6442.9,
+      "p95_us": 7483.03,
+      "p99_us": 9051.64,
+      "min_us": 6194.4,
+      "max_us": 9362.5
+    }
+  },
+  "memory": {
+    "current_traced_kb": 7116.01,
+    "peak_traced_kb": 7137.29
+  }
+}

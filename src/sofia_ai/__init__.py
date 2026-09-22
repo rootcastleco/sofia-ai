@@ -41,7 +41,7 @@ Pre-2.0 imports (``SofiaModel``, ``QuantumNeuralEngine``, ``NLPProcessor``,
 
 from __future__ import annotations
 
-__version__ = "2.2.0"
+__version__ = "3.0.0a1"
 __author__ = "Rootcastle Engineering & Innovation"
 __license__ = "Apache-2.0"
 

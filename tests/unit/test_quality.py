@@ -15,8 +15,10 @@ from sofia_ai.core.quality import (
 
 
 def test_all_states_exist() -> None:
-    expected = {"GOOD", "STALE", "MISSING", "INVALID", "OUT_OF_RANGE", "DUPLICATE",
-                "ESTIMATED", "UNSYNCHRONIZED"}
+    expected = {
+        "GOOD", "DEGRADED", "SATURATED", "STALE", "MISSING", "INVALID",
+        "OUT_OF_RANGE", "DUPLICATE", "ESTIMATED", "UNSYNCHRONIZED",
+    }
     assert {q.value for q in DataQuality} == expected
 
 

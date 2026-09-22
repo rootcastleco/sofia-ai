@@ -15,8 +15,8 @@ import cmath
 import math
 from collections import Counter
 from collections.abc import Sequence
-from dataclasses import dataclass, field
-from typing import Any, Final
+from dataclasses import dataclass
+from typing import Final
 
 import numpy as np
 

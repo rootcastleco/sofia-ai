@@ -1,9 +1,9 @@
 site_name: Sofia Engine
 site_description: Offline-First Edge Intelligence for Industrial Telemetry, Condition Monitoring & Safe Technical Automation
 site_author: Rootcastle Engineering & Innovation
-site_url: https://rootcastleco.github.io/sofia-rl/
-repo_url: https://github.com/rootcastleco/sofia-rl
-repo_name: rootcastleco/sofia-rl
+site_url: https://rootcastleco.github.io/sofia-ai/
+repo_url: https://github.com/rootcastleco/sofia-ai
+repo_name: rootcastleco/sofia-ai
 
 theme:
   name: material

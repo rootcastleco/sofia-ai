@@ -139,11 +139,25 @@ export function marginFactor(values: ArrayLike<number>): number {
 export function zeroCrossingRate(values: ArrayLike<number>): number {
   const n = values.length;
   if (n < 2) return 0;
+  const m = mean(values);
   let crossings = 0;
-  for (let i = 1; i < n; i++) {
-    if ((values[i]! >= 0 && values[i - 1]! < 0) || (values[i]! < 0 && values[i - 1]! >= 0)) {
+  let prevSign = 0;
+
+  for (let i = 0; i < n; i++) {
+    const d = values[i]! - m;
+    let sign = 0;
+    if (d > 0) {
+      sign = 1;
+    } else if (d < 0) {
+      sign = -1;
+    } else {
+      continue;
+    }
+
+    if (prevSign !== 0 && sign !== prevSign) {
       crossings++;
     }
+    prevSign = sign;
   }
   return crossings / (n - 1);
 }

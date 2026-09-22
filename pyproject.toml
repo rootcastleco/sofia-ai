@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "sofia-engine"
-version = "2.2.0"
+version = "3.0.0a1"
 description = "Open-source scientific AI and edge intelligence engine for industrial telemetry, multi-domain DSP, assembly self-training, and safe technical automation"
 readme = "README.md"
 requires-python = ">=3.11"
@@ -82,12 +82,12 @@ docs = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/rootcastleco/sofia-rl"
-Documentation = "https://rootcastleco.github.io/sofia-rl/"
-Repository = "https://github.com/rootcastleco/sofia-rl"
-Issues = "https://github.com/rootcastleco/sofia-rl/issues"
-Changelog = "https://github.com/rootcastleco/sofia-rl/blob/main/CHANGELOG.md"
-Security = "https://github.com/rootcastleco/sofia-rl/blob/main/SECURITY.md"
+Homepage = "https://github.com/rootcastleco/sofia-ai"
+Documentation = "https://rootcastleco.github.io/sofia-ai/"
+Repository = "https://github.com/rootcastleco/sofia-ai"
+Issues = "https://github.com/rootcastleco/sofia-ai/issues"
+Changelog = "https://github.com/rootcastleco/sofia-ai/blob/main/CHANGELOG.md"
+Security = "https://github.com/rootcastleco/sofia-ai/blob/main/SECURITY.md"
 
 [project.scripts]
 sofia = "sofia_ai.cli.main:main"
@@ -176,10 +176,18 @@ select = [
     "TRY",         # tryceratops
 ]
 ignore = [
+    "PLR0911",   # many returns: VM opcode dispatch
+    "PLR0912",   # many branches: VM opcode dispatch
     "PLR0913",   # many args: configuration dataclasses and detectors need them
+    "PLR0915",   # many statements: VM opcode dispatch loops
+    "PLR0917",   # many positional args: physical parameter functions
     "PLR2004",   # magic values: test and DSP tolerances
+    "PLW1641",   # object does not implement __hash__
     "TRY003",    # long messages: typed errors carry guidance text
+    "TRY301",    # abstract raise to inner function
+    "TRY401",    # redundant exception object in logging.exception
     "S101",      # assert: tests
+    "S310",      # urllib urlopen scheme audit
     "E501",      # line length handled by formatter
     "PLC0415",   # function-local imports are deliberate: keeps `sofia --help`
                  # fast, keeps optional integrations out of the core import path,

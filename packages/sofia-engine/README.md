@@ -16,7 +16,7 @@
 [![Security Audited](https://img.shields.io/badge/security-threat%20modeled%20%7C%20no%20pickle-red.svg)](specs/001-sofia-engine-modernization/threat-model.md)
 [![Organization](https://img.shields.io/badge/developed%20by-Rootcastle%20Engineering-black.svg)](https://rootcastle.com/)
 
-[**Documentation**](https://rootcastleco.github.io/sofia-rl/) | [**GitHub Wiki**](https://github.com/rootcastleco/sofia-rl/wiki) | [**NPM Package**](https://www.npmjs.com/package/@rootcastle/sofia-engine) | [**REI SignalLab**](https://github.com/rootcastleco/rei-signallab) | [**Rootcastle**](https://rootcastle.com/)
+[**Documentation**](https://rootcastleco.github.io/sofia-ai/) | [**GitHub Wiki**](https://github.com/rootcastleco/sofia-ai/wiki) | [**NPM Package**](https://www.npmjs.com/package/@rootcastle/sofia-engine) | [**REI SignalLab**](https://github.com/rootcastleco/rei-signallab) | [**Rootcastle**](https://rootcastle.com/)
 
 ---
 

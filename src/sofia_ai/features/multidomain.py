@@ -10,7 +10,6 @@ Extends Sofia Engine beyond vibration to:
 
 from __future__ import annotations
 
-import math
 from typing import Final
 
 import numpy as np
@@ -43,7 +42,7 @@ def extract_electrical_features(
     metrics = compute_electrical_power_metrics(v_sig, i_sig, fs, nom_freq=nom_freq)
     d = metrics.to_dict()
     names = tuple(sorted(d.keys()))
-    values = np.asarray([d[k] for k in names], dtype=np.float64)
+    values = tuple(float(d[k]) for k in names)
 
     return FeatureVector(
         names=names,
@@ -66,7 +65,7 @@ def extract_acoustic_features(
     d["cavitation_index"] = cavitation
 
     names = tuple(sorted(d.keys()))
-    values = np.asarray([float(d[k]) for k in names], dtype=np.float64)
+    values = tuple(float(d[k]) for k in names)
 
     return FeatureVector(
         names=names,
@@ -121,7 +120,7 @@ def extract_process_features(
         d["pressure_crest_factor"] = 0.0
 
     names = tuple(sorted(d.keys()))
-    values = np.asarray([d[k] for k in names], dtype=np.float64)
+    values = tuple(float(d[k]) for k in names)
 
     return FeatureVector(
         names=names,
@@ -174,7 +173,7 @@ def extract_motion_features(
     }
 
     names = tuple(sorted(d.keys()))
-    values = np.asarray([d[k] for k in names], dtype=np.float64)
+    values = tuple(float(d[k]) for k in names)
 
     return FeatureVector(
         names=names,

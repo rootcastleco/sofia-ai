@@ -18,6 +18,7 @@ from ..core.validation import validate_probability
 
 __all__ = [
     "MAX_EVIDENCE_PER_EVENT",
+    "DiagnosticEvidence",
     "Evidence",
     "EvidenceBundle",
     "EvidenceKind",
@@ -184,3 +185,7 @@ def escalate_severity(base: Severity, confidence: float, *,
     if confidence >= warning_at and base.rank < Severity.WARNING.rank:
         return Severity.WARNING
     return base
+
+
+#: Canonical alias for Sofia 3.x runtime specification.
+DiagnosticEvidence = Evidence

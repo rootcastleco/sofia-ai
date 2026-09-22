@@ -5,6 +5,8 @@
 
 export enum DataQuality {
   GOOD = "GOOD",
+  DEGRADED = "DEGRADED",
+  SATURATED = "SATURATED",
   STALE = "STALE",
   MISSING = "MISSING",
   INVALID = "INVALID",
@@ -13,6 +15,9 @@ export enum DataQuality {
   ESTIMATED = "ESTIMATED",
   UNSYNCHRONIZED = "UNSYNCHRONIZED"
 }
+
+export const SignalQuality = DataQuality;
+export type SignalQuality = DataQuality;
 
 export enum Severity {
   NORMAL = "NORMAL",
@@ -24,9 +29,14 @@ export enum Severity {
 
 export enum MachineState {
   UNKNOWN = "UNKNOWN",
+  OFF = "OFF",
   OFFLINE = "OFFLINE",
+  STARTUP = "STARTUP",
   STARTING = "STARTING",
+  IDLE = "IDLE",
+  RUNNING = "RUNNING",
   OPERATIONAL = "OPERATIONAL",
+  DEGRADED = "DEGRADED",
   STANDBY = "STANDBY",
   MAINTENANCE = "MAINTENANCE",
   FAULT = "FAULT",
@@ -51,6 +61,25 @@ export interface TelemetrySample {
   tags?: Record<string, string>;
 }
 
+export type Sample = TelemetrySample;
+
+export interface SignalMetadata {
+  channel: string;
+  deviceId: string;
+  sampleRate: number;
+  unit: string;
+  sourceId?: string;
+  tags?: Record<string, string>;
+}
+
+export interface SignalFrame {
+  data: Float64Array;
+  metadata: SignalMetadata;
+  startTime: number;
+  endTime: number;
+  quality: DataQuality;
+}
+
 export interface SignalWindow {
   values: Float64Array;
   sampleRate: number;
@@ -62,13 +91,39 @@ export interface SignalWindow {
   qualityMask?: boolean[];
 }
 
+export interface Feature {
+  name: string;
+  value: number;
+  unit?: string;
+  uncertainty?: number;
+  algorithm?: string;
+}
+
 export interface FeatureVector {
   names: readonly string[];
   values: Float64Array;
   extractorId: string;
   extractorVersion: string;
   timestamp?: number;
+  schemaVersion?: string;
+  uncertainties?: Float64Array;
+  features?: Feature[];
   asDict(): Record<string, number>;
+}
+
+export interface InferenceRequest {
+  modelId: string;
+  featureVector: FeatureVector;
+  timestamp?: number;
+  context?: Record<string, unknown>;
+}
+
+export interface RuntimeFault {
+  faultCode: string;
+  message: string;
+  component: string;
+  timestamp: number;
+  details?: Record<string, unknown>;
 }
 
 export interface InferenceResult {

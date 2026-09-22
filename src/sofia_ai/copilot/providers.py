@@ -95,10 +95,10 @@ class NvidiaProvider:
                 return ""
         except urllib.error.HTTPError as exc:
             err_body = exc.read().decode("utf-8", errors="replace")
-            logger.error("NVIDIA API error %d: %s", exc.code, err_body)
+            logger.exception("NVIDIA API error %d: %s", exc.code, err_body)
             raise RuntimeError(f"NVIDIA API HTTP {exc.code}: {err_body}") from exc
         except Exception as exc:
-            logger.error("NVIDIA connection failed: %s", exc)
+            logger.exception("NVIDIA connection failed: %s", exc)
             raise RuntimeError(f"NVIDIA connection error: {exc}") from exc
 
 
@@ -140,7 +140,7 @@ class OpenRouterProvider:
             "Authorization": f"Bearer {self.api_key}",
             "HTTP-Referer": "https://rootcastle.com/",
             "X-Title": "Sofia Engine (Rootcastle)",
-            "User-Agent": "Sofia-Engine/2.0 (Rootcastle)",
+            "User-Agent": "Sofia-Engine/3.0 (Rootcastle)",
         }
         payload = {
             "model": self.model,
@@ -177,10 +177,10 @@ class OpenRouterProvider:
                 return ""
         except urllib.error.HTTPError as exc:
             err_body = exc.read().decode("utf-8", errors="replace")
-            logger.error("OpenRouter API error %d: %s", exc.code, err_body)
+            logger.exception("OpenRouter API error %d: %s", exc.code, err_body)
             raise RuntimeError(f"OpenRouter API HTTP {exc.code}: {err_body}") from exc
         except Exception as exc:
-            logger.error("OpenRouter connection failed: %s", exc)
+            logger.exception("OpenRouter connection failed: %s", exc)
             raise RuntimeError(f"OpenRouter connection error: {exc}") from exc
 
 
@@ -251,9 +251,9 @@ class AIEngine:
 
 
 __all__ = [
-    "AIEngine",
     "DEFAULT_NVIDIA_MODEL",
     "DEFAULT_OPENROUTER_MODEL",
+    "AIEngine",
     "NvidiaProvider",
     "OpenRouterProvider",
 ]

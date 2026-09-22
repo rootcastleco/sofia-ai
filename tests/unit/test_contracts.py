@@ -200,4 +200,4 @@ class TestStableId:
 
 
 def test_contract_version_is_declared() -> None:
-    assert CONTRACT_VERSION == "2.0"
+    assert CONTRACT_VERSION == "3.0"

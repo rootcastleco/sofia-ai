@@ -6,12 +6,9 @@ import json
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
-import pytest
-
 from sofia_ai.learning.finetune import (
     AutoFineTuner,
     DatasetCurator,
-    FineTuneJob,
     FineTuneStatus,
 )
 
@@ -72,23 +69,23 @@ def test_auto_fine_tuner_dry_run(tmp_path: Path) -> None:
     dummy_data.write_text('{"messages": []}\n', encoding="utf-8")
 
     job = tuner.create_job(dummy_data, model="nvidia/llama-3.1-8b-instruct")
-    assert job.status == FineTuneStatus.SUCCEEDED
-    assert job.fine_tuned_model is not None
-    assert "finetuned" in job.fine_tuned_model
+    assert job.status == FineTuneStatus.DRY_RUN
+    assert job.simulated is True
+    assert job.metrics is None
 
     registry_path = tmp_path / "registry.json"
     reg = tuner.register_checkpoint(job, registry_path=registry_path)
-    assert reg["model_id"] == job.fine_tuned_model
+    assert reg["model_id"] == f"sofia-ft-{job.job_id}"
     assert registry_path.exists()
 
     loaded_reg = json.loads(registry_path.read_text(encoding="utf-8"))
-    assert job.fine_tuned_model in loaded_reg["fine_tuned_models"]
+    assert reg["model_id"] in loaded_reg["fine_tuned_models"]
 
 
 def test_auto_fine_tuner_online_mock(tmp_path: Path) -> None:
     tuner = AutoFineTuner(
-        provider="nvidia",
-        api_key="nvapi-fake-key",
+        provider="openai",
+        api_key="sk-openai-fake-key",
         dry_run=False,
     )
     assert tuner.is_online
@@ -97,11 +94,11 @@ def test_auto_fine_tuner_online_mock(tmp_path: Path) -> None:
     dummy_data.write_text('{"messages": []}\n', encoding="utf-8")
 
     mock_resp = MagicMock()
-    mock_resp.read.return_value = b'{"id": "ftjob-online-123", "status": "queued", "model": "nvidia/llama-3.1-8b-instruct"}'
+    mock_resp.read.return_value = b'{"id": "ftjob-online-123", "status": "queued", "model": "gpt-4o-mini"}'
     mock_resp.__enter__.return_value = mock_resp
 
     with patch("urllib.request.urlopen", return_value=mock_resp):
-        job = tuner.create_job(dummy_data)
+        job = tuner.create_job(dummy_data, model="gpt-4o-mini")
         assert job.job_id == "ftjob-online-123"
         assert job.status == FineTuneStatus.QUEUED
 
@@ -135,6 +132,7 @@ def test_auto_tune_from_telemetry_end_to_end(tmp_path: Path) -> None:
         dataset_output_path=dataset_file,
         registry_path=registry_file,
     )
-    assert job.status == FineTuneStatus.SUCCEEDED
+    assert job.status == FineTuneStatus.DRY_RUN
+    assert job.simulated is True
     assert dataset_file.exists()
     assert registry_file.exists()
