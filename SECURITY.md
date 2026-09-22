@@ -7,7 +7,7 @@ Report it privately to the maintainers instead:
 
 - Open a private advisory: GitHub → *Security* → *Report a vulnerability*
 - Or email the Rootcastle Engineering & Innovation team via the repository
-  maintainers with the subject `[sofia-rl security]`.
+  maintainers with the subject `[sofia-ai security]`.
 
 Please include: module and version affected, a description of the weakness,
 and — if you have one — a minimal reproduction. Coordinated disclosure is
@@ -24,7 +24,8 @@ active hardening but should still be disclosed through the same channel.
 
 | Version | Supported |
 | --- | --- |
-| 2.x (sofia-engine) | Yes |
+| 3.x (sofia-engine) | Yes |
+| 2.x (sofia-engine) | Maintenance only |
 | 1.x (legacy sofia_ai) | No — reference only |
 
 ## Design posture

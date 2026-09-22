@@ -151,7 +151,7 @@ class TestPackaging:
         project = payload["project"]
         assert project["name"] == "sofia-engine"
         assert project["license"] == "Apache-2.0"
-        assert "rootcastleco/sofia-rl" in project["urls"]["Repository"]
+        assert "rootcastleco/sofia-ai" in project["urls"]["Repository"]
         assert project["requires-python"] == ">=3.11"
         assert "License" not in " ".join(project["classifiers"])  # PEP 639
         assert project["license"] == "Apache-2.0"  # SPDX, single source of truth
@@ -186,7 +186,7 @@ class TestPackaging:
     def test_version_matches_package(self) -> None:
         import sofia_ai
 
-        assert sofia_ai.__version__ == "2.2.0"
+        assert sofia_ai.__version__ == "3.0.0a1"
 
     def test_license_file_is_apache(self) -> None:
         from pathlib import Path

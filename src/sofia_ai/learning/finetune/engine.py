@@ -19,6 +19,7 @@ from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Any, Final
 
+from ...core.errors import FeatureNotSupportedError
 from ...security.secrets import secret
 
 logger = logging.getLogger(__name__)
@@ -28,13 +29,14 @@ __all__ = [
     "DatasetCurator",
     "FineTuneJob",
     "FineTuneStatus",
+    "ProviderCapabilities",
 ]
 
 DEFAULT_NVIDIA_BASE_URL: Final[str] = "https://integrate.api.nvidia.com/v1"
 DEFAULT_OPENAI_BASE_URL: Final[str] = "https://api.openai.com/v1"
 
 
-class FineTuneStatus(str, enum.Enum):
+class FineTuneStatus(enum.StrEnum):
     """Fine-tuning job lifecycle statuses."""
 
     PENDING = "pending"
@@ -43,6 +45,18 @@ class FineTuneStatus(str, enum.Enum):
     SUCCEEDED = "succeeded"
     FAILED = "failed"
     CANCELLED = "cancelled"
+    DRY_RUN = "dry_run"
+
+
+@dataclass(frozen=True)
+class ProviderCapabilities:
+    """Declared capabilities for a remote provider adapter."""
+
+    provider: str
+    file_upload: bool
+    fine_tuning: bool
+    job_cancel: bool
+    inference: bool = True
 
 
 @dataclass
@@ -57,8 +71,9 @@ class FineTuneJob:
     fine_tuned_model: str | None = None
     training_file: str | None = None
     hyperparameters: dict[str, Any] = field(default_factory=dict)
-    metrics: dict[str, float] = field(default_factory=dict)
+    metrics: dict[str, float] | None = None
     error_message: str | None = None
+    simulated: bool = False
 
     def to_dict(self) -> dict[str, Any]:
         """Convert job representation to JSON-serializable dictionary."""
@@ -229,10 +244,100 @@ class AutoFineTuner:
 
         self.jobs: dict[str, FineTuneJob] = {}
 
+    PROVIDER_CAPABILITIES: Final[dict[str, ProviderCapabilities]] = {
+        "openai": ProviderCapabilities(
+            provider="openai",
+            file_upload=True,
+            fine_tuning=True,
+            job_cancel=True,
+        ),
+        "nvidia": ProviderCapabilities(
+            provider="nvidia",
+            file_upload=False,
+            fine_tuning=False,
+            job_cancel=False,
+        ),
+        "openrouter": ProviderCapabilities(
+            provider="openrouter",
+            file_upload=False,
+            fine_tuning=False,
+            job_cancel=False,
+        ),
+    }
+
+    @property
+    def capabilities(self) -> ProviderCapabilities:
+        """Return the capabilities of the current provider."""
+        return self.PROVIDER_CAPABILITIES.get(
+            self.provider,
+            ProviderCapabilities(
+                provider=self.provider,
+                file_upload=False,
+                fine_tuning=False,
+                job_cancel=False,
+            ),
+        )
+
     @property
     def is_online(self) -> bool:
         """True if valid API key is available and dry_run is disabled."""
         return bool(not self.dry_run and self.api_key and self.api_key.strip())
+
+    def upload_dataset(self, dataset_path: str | Path) -> str:
+        """Upload dataset file to remote provider or simulate upload in dry-run mode."""
+        dataset_p = Path(dataset_path)
+        if not dataset_p.exists():
+            raise FileNotFoundError(f"Dataset file not found: {dataset_p}")
+
+        if not self.is_online:
+            simulated_file_id = f"file-dryrun-{int(time.time())}"
+            logger.info("Simulated dataset upload: %s -> %s", dataset_p, simulated_file_id)
+            return simulated_file_id
+
+        if not self.capabilities.file_upload:
+            raise FeatureNotSupportedError(
+                f"Provider '{self.provider}' does not support remote file upload.",
+                details={"provider": self.provider, "capability": "file_upload"},
+            )
+
+        boundary = f"----SofiaBoundary{int(time.time() * 1000)}"
+        file_bytes = dataset_p.read_bytes()
+        filename = dataset_p.name
+
+        body = (
+            f"--{boundary}\r\n"
+            f'Content-Disposition: form-data; name="purpose"\r\n\r\n'
+            f"fine-tune\r\n"
+            f"--{boundary}\r\n"
+            f'Content-Disposition: form-data; name="file"; filename="{filename}"\r\n'
+            f"Content-Type: application/json\r\n\r\n"
+        ).encode() + file_bytes + f"\r\n--{boundary}--\r\n".encode()
+
+        url = f"{self.base_url}/files"
+        if not (url.startswith("https://") or url.startswith("http://")):
+            raise ValueError(f"Insecure or invalid URL scheme: {url}")
+        headers = {
+            "Content-Type": f"multipart/form-data; boundary={boundary}",
+            "Authorization": f"Bearer {self.api_key}",
+            "User-Agent": "Sofia-AI/3.0 (Rootcastle)",
+        }
+        req = urllib.request.Request(url, data=body, headers=headers, method="POST")
+
+        try:
+            with urllib.request.urlopen(req, timeout=60.0) as response:
+                resp_body = json.loads(response.read().decode("utf-8"))
+                file_id = resp_body.get("id")
+                if not file_id:
+                    raise RuntimeError("Upload response did not contain a file ID")
+                logger.info("Uploaded %s to provider %s as %s", dataset_p, self.provider, file_id)
+                return str(file_id)
+        except urllib.error.HTTPError as exc:
+            err_body = exc.read().decode("utf-8", errors="replace")
+            logger.exception("File upload HTTP %d: %s", exc.code, err_body)
+            raise RuntimeError(f"File upload HTTP {exc.code}: {err_body}") from exc
+        except Exception as exc:
+            logger.exception("Failed to upload dataset: %s", exc)
+            raise RuntimeError(f"File upload failed: {exc}") from exc
 
     def create_job(
         self,
@@ -240,44 +345,47 @@ class AutoFineTuner:
         model: str | None = None,
         hyperparameters: dict[str, Any] | None = None,
     ) -> FineTuneJob:
-        """Create and submit a fine-tuning job."""
-        model_name = model or self.default_model
-        dataset_p = Path(dataset_path)
-
-        if not dataset_p.exists():
-            raise FileNotFoundError(f"Training dataset not found: {dataset_p}")
-
-        hp = hyperparameters or {"n_epochs": 3, "batch_size": 4, "learning_rate_multiplier": 1.0}
-
-        # Offline / Dry-Run Mode
+        """Create a remote fine-tuning job."""
         if not self.is_online:
-            job_id = f"ftjob-dryrun-{int(time.time())}"
-            job = FineTuneJob(
-                job_id=job_id,
-                model=model_name,
-                status=FineTuneStatus.SUCCEEDED,
-                finished_at=time.time(),
-                fine_tuned_model=f"rootcastle/sofia-{model_name.split('/')[-1]}-finetuned",
-                training_file=str(dataset_p),
-                hyperparameters=hp,
-                metrics={"train_loss": 0.042, "eval_accuracy": 0.985},
+            sim_job = FineTuneJob(
+                job_id=f"ftjob-dry-{int(time.time())}",
+                model=model or self.default_model,
+                status=FineTuneStatus.DRY_RUN,
+                created_at=time.time(),
+                hyperparameters=hyperparameters or {},
+                simulated=True,
+                metrics=None,
             )
-            self.jobs[job_id] = job
-            logger.info("Created simulated dry-run fine-tune job: %s", job_id)
-            return job
+            self.jobs[sim_job.job_id] = sim_job
+            logger.info(
+                "Offline/dry-run mode: Created simulated fine-tuning job %s with model %s",
+                sim_job.job_id,
+                sim_job.model,
+            )
+            return sim_job
 
-        # Online API Submission (OpenAI-compatible fine-tuning endpoint)
+        if not self.capabilities.fine_tuning:
+            raise FeatureNotSupportedError(
+                f"Provider '{self.provider}' does not support remote fine-tuning.",
+                details={"provider": self.provider, "capability": "fine_tuning"},
+            )
+
+        file_id = self.upload_dataset(dataset_path)
+
         url = f"{self.base_url}/fine_tuning/jobs"
+        if not (url.startswith("https://") or url.startswith("http://")):
+            raise ValueError(f"Insecure or invalid URL scheme: {url}")
         headers = {
             "Content-Type": "application/json",
             "Authorization": f"Bearer {self.api_key}",
-            "User-Agent": "Sofia-AI/2.1 (Rootcastle)",
+            "User-Agent": "Sofia-AI/3.0 (Rootcastle)",
         }
-        payload = {
-            "model": model_name,
-            "training_file": str(dataset_p),
-            "hyperparameters": hp,
+        payload: dict[str, Any] = {
+            "training_file": file_id,
+            "model": model or self.default_model,
         }
+        if hyperparameters:
+            payload["hyperparameters"] = hyperparameters
 
         req = urllib.request.Request(
             url,
@@ -290,26 +398,74 @@ class AutoFineTuner:
             with urllib.request.urlopen(req, timeout=30.0) as response:
                 body = json.loads(response.read().decode("utf-8"))
                 job_id = body.get("id", f"ftjob-{int(time.time())}")
-                status_raw = body.get("status", "queued")
-                status = FineTuneStatus(status_raw) if status_raw in FineTuneStatus._value2member_map_ else FineTuneStatus.QUEUED
-
+                status_raw = body.get("status", "running")
+                status = FineTuneStatus(status_raw) if status_raw in FineTuneStatus._value2member_map_ else FineTuneStatus.RUNNING
                 job = FineTuneJob(
                     job_id=job_id,
-                    model=model_name,
+                    model=model or self.default_model,
                     status=status,
-                    fine_tuned_model=body.get("fine_tuned_model"),
-                    training_file=str(dataset_p),
-                    hyperparameters=hp,
+                    created_at=time.time(),
+                    hyperparameters=hyperparameters or {},
+                    simulated=False,
                 )
                 self.jobs[job_id] = job
+                logger.info("Created fine-tuning job %s via %s", job_id, self.provider)
                 return job
         except urllib.error.HTTPError as exc:
             err_body = exc.read().decode("utf-8", errors="replace")
-            logger.error("Fine-tuning API error %d: %s", exc.code, err_body)
+            logger.exception("Fine-tuning API error %d: %s", exc.code, err_body)
             raise RuntimeError(f"Fine-tuning API HTTP {exc.code}: {err_body}") from exc
         except Exception as exc:
-            logger.error("Failed to submit fine-tuning job: %s", exc)
+            logger.exception("Failed to submit fine-tuning job: %s", exc)
             raise RuntimeError(f"Fine-tuning connection failed: {exc}") from exc
+
+    def cancel_job(self, job_id: str) -> FineTuneJob:
+        """Cancel an ongoing fine-tuning job."""
+        if not self.is_online:
+            job = self.jobs.get(job_id)
+            if job is None:
+                job = FineTuneJob(
+                    job_id=job_id,
+                    model=self.default_model,
+                    status=FineTuneStatus.CANCELLED,
+                    finished_at=time.time(),
+                    simulated=True,
+                )
+                self.jobs[job_id] = job
+            else:
+                job.status = FineTuneStatus.CANCELLED
+                job.finished_at = time.time()
+            return job
+
+        if not self.capabilities.job_cancel:
+            raise FeatureNotSupportedError(
+                f"Provider '{self.provider}' does not support remote job cancellation.",
+                details={"provider": self.provider, "capability": "job_cancel"},
+            )
+
+        url = f"{self.base_url}/fine_tuning/jobs/{job_id}/cancel"
+        if not (url.startswith("https://") or url.startswith("http://")):
+            raise ValueError(f"Insecure or invalid URL scheme: {url}")
+        headers = {
+            "Authorization": f"Bearer {self.api_key}",
+            "User-Agent": "Sofia-AI/3.0 (Rootcastle)",
+        }
+        req = urllib.request.Request(url, headers=headers, method="POST")
+
+        try:
+            with urllib.request.urlopen(req, timeout=15.0) as response:
+                body = json.loads(response.read().decode("utf-8"))
+                job = self.jobs.get(
+                    job_id,
+                    FineTuneJob(job_id=job_id, model=body.get("model", ""), status=FineTuneStatus.CANCELLED),
+                )
+                job.status = FineTuneStatus.CANCELLED
+                job.finished_at = time.time()
+                self.jobs[job_id] = job
+                return job
+        except Exception as exc:
+            logger.exception("Failed to cancel fine-tune job %s: %s", job_id, exc)
+            raise RuntimeError(f"Failed to cancel job {job_id}: {exc}") from exc
 
     def get_job_status(self, job_id: str) -> FineTuneJob:
         """Poll the status of an ongoing fine-tuning job."""
@@ -317,9 +473,11 @@ class AutoFineTuner:
             return self.jobs[job_id]
 
         url = f"{self.base_url}/fine_tuning/jobs/{job_id}"
+        if not (url.startswith("https://") or url.startswith("http://")):
+            raise ValueError(f"Insecure or invalid URL scheme: {url}")
         headers = {
             "Authorization": f"Bearer {self.api_key}",
-            "User-Agent": "Sofia-AI/2.1 (Rootcastle)",
+            "User-Agent": "Sofia-AI/3.0 (Rootcastle)",
         }
         req = urllib.request.Request(url, headers=headers, method="GET")
 
@@ -357,7 +515,7 @@ class AutoFineTuner:
         registry_path: str | Path = "models/registry.json",
     ) -> dict[str, Any]:
         """Register the fine-tuned model checkpoint in the Sofia model registry."""
-        if job.status != FineTuneStatus.SUCCEEDED:
+        if job.status not in (FineTuneStatus.SUCCEEDED, FineTuneStatus.DRY_RUN):
             raise ValueError(f"Cannot register checkpoint for job with status: {job.status}")
 
         reg_p = Path(registry_path)
@@ -399,7 +557,7 @@ class AutoFineTuner:
         dataset_file = curator.export_jsonl(dataset_output_path)
 
         job = self.create_job(dataset_file, model=model)
-        if job.status == FineTuneStatus.SUCCEEDED:
+        if job.status in (FineTuneStatus.SUCCEEDED, FineTuneStatus.DRY_RUN):
             self.register_checkpoint(job, registry_path=registry_path)
 
         return job

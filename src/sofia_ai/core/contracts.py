@@ -24,7 +24,7 @@ from typing import Any, Final
 import numpy as np
 
 from .errors import ValidationError
-from .quality import DataQuality
+from .quality import DataQuality, SignalQuality
 from .time import validate_timestamp
 from .units import unit_alias
 from .validation import (
@@ -37,16 +37,23 @@ from .validation import (
 __all__ = [
     "CONTRACT_VERSION",
     "DataQuality",
+    "Feature",
     "FeatureVector",
+    "InferenceRequest",
     "MachineState",
+    "RuntimeFault",
+    "Sample",
     "Severity",
+    "SignalFrame",
+    "SignalMetadata",
+    "SignalQuality",
     "SignalWindow",
     "TelemetryFrame",
     "TelemetrySample",
     "stable_id",
 ]
 
-CONTRACT_VERSION: Final[str] = "2.0"
+CONTRACT_VERSION: Final[str] = "3.0"
 
 
 class MachineState(StrEnum):
@@ -196,6 +203,46 @@ class TelemetrySample:
         )
 
 
+#: Canonical alias for Sofia 3.x runtime specification.
+Sample = TelemetrySample
+
+
+@dataclass(frozen=True, slots=True)
+class SignalMetadata:
+    """Metadata describing an ingested physical signal channel."""
+
+    sample_rate: float
+    channel_name: str
+    physical_unit: str
+    sensor_id: str = ""
+    calibration_id: str = ""
+    scale_factor: float = 1.0
+
+    def __post_init__(self) -> None:
+        validate_sample_rate(self.sample_rate)
+        object.__setattr__(self, "channel_name", validate_identifier(self.channel_name, "channel_name"))
+        normalized = unit_alias(self.physical_unit)
+        object.__setattr__(self, "physical_unit", normalized)
+        if not math.isfinite(self.scale_factor) or self.scale_factor <= 0.0:
+            raise ValidationError("scale_factor must be positive finite float", details={"scale_factor": self.scale_factor})
+
+
+@dataclass(frozen=True, slots=True)
+class SignalFrame:
+    """An immutable, bounded frame of samples sharing metadata."""
+
+    samples: tuple[Sample, ...]
+    metadata: SignalMetadata | None = None
+
+    def __post_init__(self) -> None:
+        if len(self.samples) > 65536:
+            raise ValidationError("SignalFrame exceeds maximum capacity (65536)", details={"size": len(self.samples)})
+
+    @property
+    def size(self) -> int:
+        return len(self.samples)
+
+
 @dataclass(frozen=True, slots=True)
 class TelemetryFrame:
     """A bounded batch of samples sharing a device and a nominal time."""
@@ -290,6 +337,34 @@ class SignalWindow:
 
 
 @dataclass(frozen=True, slots=True)
+class Feature:
+    """A single named, versioned, unit-bearing feature."""
+
+    name: str
+    value: float
+    unit: str
+    uncertainty: float = 0.0
+    quality: DataQuality = DataQuality.GOOD
+    algorithm: str = ""
+    algorithm_version: str = "1.0"
+
+    def __post_init__(self) -> None:
+        object.__setattr__(self, "name", validate_identifier(self.name, "name"))
+        if not math.isfinite(float(self.value)):
+            raise ValidationError(
+                f"Feature value for {self.name!r} must be finite",
+                details={"name": self.name, "value": self.value},
+            )
+        if not math.isfinite(float(self.uncertainty)) or self.uncertainty < 0.0:
+            raise ValidationError(
+                f"Feature uncertainty for {self.name!r} must be non-negative finite float",
+                details={"name": self.name, "uncertainty": self.uncertainty},
+            )
+        normalized = unit_alias(self.unit)
+        object.__setattr__(self, "unit", normalized)
+
+
+@dataclass(frozen=True, slots=True)
 class FeatureVector:
     """An ordered, named, versioned feature vector.
 
@@ -305,6 +380,9 @@ class FeatureVector:
     sample_rate: float = 0.0
     quality: DataQuality = DataQuality.GOOD
     metadata: Mapping[str, Any] = field(default_factory=dict)
+    schema_version: str = "3.0"
+    uncertainties: tuple[float, ...] = ()
+    features: tuple[Feature, ...] = ()
 
     def __post_init__(self) -> None:
         if len(self.names) != len(self.values):
@@ -319,6 +397,35 @@ class FeatureVector:
                 raise ValidationError(
                     f"Feature {name!r} is not finite", details={"feature": name}
                 )
+
+        unc = self.uncertainties
+        if not unc or len(unc) != len(self.names):
+            unc = tuple(0.0 for _ in self.names)
+            object.__setattr__(self, "uncertainties", unc)
+
+        if not self.features or len(self.features) != len(self.names):
+            feats = tuple(
+                Feature(
+                    name=n,
+                    value=v,
+                    unit=str(self.metadata.get("unit", "dimensionless")),
+                    uncertainty=u,
+                    quality=self.quality,
+                    algorithm=self.extractor_id,
+                    algorithm_version=self.extractor_version,
+                )
+                for n, v, u in zip(self.names, self.values, unc, strict=True)
+            )
+            object.__setattr__(self, "features", feats)
+
+    def validate_schema(self, expected_schema_version: str) -> bool:
+        """Verify that vector matches expected schema version."""
+        if self.schema_version != expected_schema_version:
+            raise ValidationError(
+                f"FeatureVector schema version mismatch: expected {expected_schema_version}, got {self.schema_version}",
+                details={"expected": expected_schema_version, "actual": self.schema_version},
+            )
+        return True
 
     @property
     def size(self) -> int:
@@ -339,6 +446,8 @@ class FeatureVector:
                 f"Unknown feature(s): {missing}", details={"missing": missing}
             )
         values = tuple(self.values[index[n]] for n in names)
+        unc = tuple(self.uncertainties[index[n]] for n in names)
+        feats = tuple(self.features[index[n]] for n in names)
         return FeatureVector(
             names=names,
             values=values,
@@ -348,6 +457,9 @@ class FeatureVector:
             sample_rate=self.sample_rate,
             quality=self.quality,
             metadata=dict(self.metadata),
+            schema_version=self.schema_version,
+            uncertainties=unc,
+            features=feats,
         )
 
     def to_dict(self) -> dict[str, Any]:
@@ -360,6 +472,8 @@ class FeatureVector:
             "sample_rate": self.sample_rate,
             "quality": self.quality.value,
             "metadata": dict(self.metadata),
+            "schema_version": self.schema_version,
+            "uncertainties": list(self.uncertainties),
         }
 
     @classmethod
@@ -373,7 +487,44 @@ class FeatureVector:
             sample_rate=float(data.get("sample_rate", 0.0)),
             quality=DataQuality(data.get("quality", DataQuality.GOOD.value)),
             metadata=dict(data.get("metadata", {})),
+            schema_version=str(data.get("schema_version", "3.0")),
+            uncertainties=tuple(float(u) for u in data.get("uncertainties", ())),
         )
+
+
+@dataclass(frozen=True, slots=True)
+class InferenceRequest:
+    """Typed input payload for model inference."""
+
+    model_id: str
+    model_version: str
+    features: FeatureVector
+    context: Mapping[str, Any] = field(default_factory=dict)
+    request_id: str = ""
+
+    def __post_init__(self) -> None:
+        object.__setattr__(self, "model_id", validate_identifier(self.model_id, "model_id"))
+        if not self.request_id:
+            object.__setattr__(self, "request_id", stable_id(self.model_id, self.model_version, str(id(self.features))))
+
+
+@dataclass(frozen=True, slots=True)
+class RuntimeFault:
+    """Structured runtime fault representation."""
+
+    fault_code: str
+    subsystem: str
+    severity: str
+    message: str
+    recoverable: bool = True
+    timestamp: float = 0.0
+
+    def __post_init__(self) -> None:
+        object.__setattr__(self, "fault_code", validate_identifier(self.fault_code, "fault_code"))
+        object.__setattr__(self, "subsystem", validate_identifier(self.subsystem, "subsystem"))
+        if self.timestamp == 0.0:
+            import time
+            object.__setattr__(self, "timestamp", time.time())
 
 
 

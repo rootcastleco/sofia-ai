@@ -15,6 +15,7 @@ from enum import StrEnum
 __all__ = [
     "QUALITY_CONFIDENCE_FACTOR",
     "DataQuality",
+    "SignalQuality",
     "combine_quality",
     "is_usable",
     "quality_confidence_factor",
@@ -28,6 +29,9 @@ class DataQuality(StrEnum):
     GOOD = "GOOD"
     """Within range, fresh, ordered, and finite."""
 
+    DEGRADED = "DEGRADED"
+    """Measurement quality impaired (e.g. low SNR or sensor wear)."""
+
     STALE = "STALE"
     """Older than the configured freshness window."""
 
@@ -39,6 +43,9 @@ class DataQuality(StrEnum):
 
     OUT_OF_RANGE = "OUT_OF_RANGE"
     """Finite but outside the configured engineering range."""
+
+    SATURATED = "SATURATED"
+    """Sensor reading at or near hardware full-scale clipping limit."""
 
     DUPLICATE = "DUPLICATE"
     """Repeat of an earlier timestamp/sequence number."""
@@ -53,11 +60,13 @@ class DataQuality(StrEnum):
 #: Deterministic attenuation applied to detector confidence by data quality.
 QUALITY_CONFIDENCE_FACTOR: dict[DataQuality, float] = {
     DataQuality.GOOD: 1.0,
+    DataQuality.DEGRADED: 0.7,
     DataQuality.ESTIMATED: 0.8,
     DataQuality.STALE: 0.6,
     DataQuality.UNSYNCHRONIZED: 0.5,
     DataQuality.MISSING: 0.3,
     DataQuality.OUT_OF_RANGE: 0.3,
+    DataQuality.SATURATED: 0.2,
     DataQuality.DUPLICATE: 0.2,
     DataQuality.INVALID: 0.0,
 }
@@ -96,3 +105,7 @@ def combine_quality(qualities: list[DataQuality] | tuple[DataQuality, ...]) -> D
 def is_usable(quality: DataQuality) -> bool:
     """Whether a sample of this quality may contribute to inference at all."""
     return quality not in (DataQuality.INVALID, DataQuality.MISSING)
+
+
+#: Canonical alias for Sofia 3.x runtime specification.
+SignalQuality = DataQuality

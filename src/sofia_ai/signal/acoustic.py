@@ -7,7 +7,6 @@ monitoring in industrial hydraulic and rotating assets.
 
 from __future__ import annotations
 
-import math
 from dataclasses import dataclass
 
 import numpy as np
@@ -85,7 +84,7 @@ def compute_acoustic_emission_features(
     # Threshold crossings (rising edges)
     above = abs_sig > th
     crossings = np.where(~above[:-1] & above[1:])[0]
-    counts = int(len(crossings))
+    counts = len(crossings)
 
     if counts > 0:
         first_idx = int(crossings[0])

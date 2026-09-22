@@ -13,6 +13,7 @@
 
 #include "../src/sofia_features.h"
 #include "../src/sofia_fixed.h"
+#include "golden_vectors.h"
 
 #include <math.h>
 #include <stdio.h>
@@ -188,6 +189,38 @@ static void test_q16_roundtrip(void)
     }
 }
 
+static void test_golden_vectors(void)
+{
+    sofia_workspace_t ws;
+    size_t c;
+    for (c = 0u; c < SOFIA_GOLDEN_N_CASES; ++c) {
+        const sofia_golden_case_t *gc = &sofia_golden_cases[c];
+        sofia_stat_features_t out;
+        sofia_status_t status;
+
+        status = sofia_features_init(&ws, 256);
+        check_true(status == SOFIA_OK, "golden init 256");
+
+        status = sofia_stat_features(gc->samples, gc->n, &out, &ws);
+        check_true(status == SOFIA_OK, "golden stat features ok");
+
+        check_close(out.mean, gc->expected[0], SOFIA_GOLDEN_TOLERANCE, "golden mean");
+        check_close(out.rms, gc->expected[1], SOFIA_GOLDEN_TOLERANCE, "golden rms");
+        check_close(out.peak, gc->expected[2], SOFIA_GOLDEN_TOLERANCE, "golden peak");
+        check_close(out.peak_to_peak, gc->expected[3], SOFIA_GOLDEN_TOLERANCE, "golden peak_to_peak");
+        check_close(out.variance, gc->expected[4], SOFIA_GOLDEN_TOLERANCE, "golden variance");
+        check_close(out.std, gc->expected[5], SOFIA_GOLDEN_TOLERANCE, "golden std");
+        check_close(out.crest_factor, gc->expected[6], SOFIA_GOLDEN_TOLERANCE, "golden crest_factor");
+        check_close(out.shape_factor, gc->expected[7], SOFIA_GOLDEN_TOLERANCE, "golden shape_factor");
+        check_close(out.impulse_factor, gc->expected[8], SOFIA_GOLDEN_TOLERANCE, "golden impulse_factor");
+        check_close(out.margin_factor, gc->expected[9], SOFIA_GOLDEN_TOLERANCE, "golden margin_factor");
+        check_close(out.skewness, gc->expected[10], SOFIA_GOLDEN_TOLERANCE, "golden skewness");
+        check_close(out.kurtosis, gc->expected[11], SOFIA_GOLDEN_TOLERANCE, "golden kurtosis");
+        check_close(out.zero_crossing_rate, gc->expected[12], SOFIA_GOLDEN_TOLERANCE, "golden zero_crossing_rate");
+        check_close(out.energy, gc->expected[13], SOFIA_GOLDEN_TOLERANCE, "golden energy");
+    }
+}
+
 int main(void)
 {
     printf("SOFIA embedded runtime tests\n");
@@ -198,6 +231,7 @@ int main(void)
     test_spectral_features();
     test_fixed_point();
     test_q16_roundtrip();
+    test_golden_vectors();
 
     printf("%d checks, %d failures\n", checks, failures);
     if (failures != 0) {

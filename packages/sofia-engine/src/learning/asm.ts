@@ -55,6 +55,29 @@ export enum OpCode {
   HALT = 0xff,
 }
 
+export enum VMStatus {
+  HALTED = "HALTED",
+  RUNNING = "RUNNING",
+  CYCLE_LIMIT = "CYCLE_LIMIT",
+  FAULT = "FAULT"
+}
+
+export enum VMFault {
+  NONE = "NONE",
+  MEM_OUT_OF_BOUNDS = "MEM_OUT_OF_BOUNDS",
+  REG_OUT_OF_BOUNDS = "REG_OUT_OF_BOUNDS",
+  INVALID_OPCODE = "INVALID_OPCODE",
+  INVALID_PROGRAM = "INVALID_PROGRAM",
+  CYCLE_LIMIT = "CYCLE_LIMIT"
+}
+
+export interface VMExecutionResult {
+  status: VMStatus;
+  fault: VMFault;
+  cycles: number;
+  pc: number;
+}
+
 export interface AsmInstruction {
   opcode: OpCode;
   arg1?: number;
@@ -231,6 +254,19 @@ export class SofiaAsmVM {
         break;
       }
 
+      case OpCode.JMP: {
+        this.pc = Math.floor(imm);
+        return;
+      }
+
+      case OpCode.JZ: {
+        if (this.getReg(arg1) === 0.0) {
+          this.pc = Math.floor(imm);
+          return;
+        }
+        break;
+      }
+
       case OpCode.HALT:
         this.halted = true;
         break;
@@ -238,21 +274,48 @@ export class SofiaAsmVM {
       default:
         break;
     }
+
+    this.pc++;
   }
 
-  public run(program: AsmInstruction[], maxCycles: number = 100000): number {
+  public run(program: AsmInstruction[], maxCycles: number = 100000): VMExecutionResult {
     this.halted = false;
     let cycles = 0;
+    if (!program || program.length === 0) {
+      return {
+        status: VMStatus.FAULT,
+        fault: VMFault.INVALID_PROGRAM,
+        cycles: 0,
+        pc: this.pc
+      };
+    }
     while (!this.halted && this.pc < program.length && cycles < maxCycles) {
       const inst = program[this.pc];
       if (!inst) {
-        break;
+        return {
+          status: VMStatus.FAULT,
+          fault: VMFault.INVALID_PROGRAM,
+          cycles,
+          pc: this.pc
+        };
       }
-      this.pc++;
       this.step(inst);
       cycles++;
     }
-    return cycles;
+    if (cycles >= maxCycles && !this.halted) {
+      return {
+        status: VMStatus.CYCLE_LIMIT,
+        fault: VMFault.CYCLE_LIMIT,
+        cycles,
+        pc: this.pc
+      };
+    }
+    return {
+      status: this.halted ? VMStatus.HALTED : VMStatus.RUNNING,
+      fault: VMFault.NONE,
+      cycles,
+      pc: this.pc
+    };
   }
 }
 

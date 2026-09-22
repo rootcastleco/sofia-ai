@@ -20,6 +20,7 @@ __all__ = [
     "DiagnosticError",
     "DimensionError",
     "FeatureError",
+    "FeatureNotSupportedError",
     "InferenceError",
     "InsufficientDataError",
     "ModelCompatibilityError",
@@ -108,6 +109,12 @@ class ConfigurationError(SofiaError):
     """Configuration failed schema or range validation."""
 
     default_code = "CONFIG"
+
+
+class FeatureNotSupportedError(SofiaError):
+    """Operation or method is not supported by the provider, model, or hardware profile."""
+
+    default_code = "FEATURE_NOT_SUPPORTED"
 
 
 # --- telemetry --------------------------------------------------------------
