@@ -1,31 +1,95 @@
 <div align="center">
 
-# SOFIA ENGINE
+![Sofia Engine — scientific signals, reproducible systems](assets/sofia-engine-banner.svg)
 
-### General Scientific AI, In-Situ Assembly Neural Self-Training & Multi-Domain Signal Intelligence Runtime
+# Sofia Engine
 
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
-[![DOI](https://img.shields.io/badge/DOI-10.57967%2Fhf%2F10549-blue.svg)](https://doi.org/10.57967/hf/10549)
-[![Hugging Face Model](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Model%20Registry-yellow.svg)](https://huggingface.co/rootcastleengineering/sofia)
-[![Hugging Face Bucket](https://img.shields.io/badge/%F0%9F%A4%97%20HF%20Bucket-Storage%20Bucket-orange.svg)](https://huggingface.co/buckets/rootcastleengineering/sofia-bucket)
-[![Python Version](https://img.shields.io/badge/python-3.11%20%7C%203.12%20%7C%203.13%20%7C%203.14-blue.svg)](pyproject.toml)
-[![NPM Version](https://img.shields.io/npm/v/@rootcastle/sofia-engine.svg?color=cb3837)](https://www.npmjs.com/package/@rootcastle/sofia-engine)
-[![Core Dependencies](https://img.shields.io/badge/runtime%20deps-NumPy%20only-brightgreen.svg)](pyproject.toml)
-[![Test Coverage](https://img.shields.io/badge/coverage-%E2%89%A585%25%20enforced-success.svg)](pyproject.toml)
-[![AI Backends](https://img.shields.io/badge/AI%20Copilot-NVIDIA%20NIM%20%7C%20OpenRouter-76b900.svg)](docs/AI-Engine-&-Copilot.md)
-[![Assembly Self-Training](https://img.shields.io/badge/learning-Assembly%20VM%20%7C%20In--Situ%20SGD-red.svg)](docs/Assembly-Neural-Engine.md)
-[![Auto Fine-Tuning](https://img.shields.io/badge/fine--tuning-Automated%20API%20%7C%20JSONL-orange.svg)](docs/Automatic-Fine-Tuning.md)
-[![Quantum Emulation](https://img.shields.io/badge/quantum-statevector%20%7C%20circuits%20%7C%20kernels-purple.svg)](src/sofia_ai/quantum/)
-[![Multi-Domain DSP](https://img.shields.io/badge/DSP-Vibration%20%7C%20Electrical%20%7C%20Acoustic-blue.svg)](src/sofia_ai/signal/)
-[![Embedded C99](https://img.shields.io/badge/embedded-C99%20%7C%20Q16.16-orange.svg)](embedded/)
-[![Security Audited](https://img.shields.io/badge/security-threat%20modeled%20%7C%20no%20pickle-red.svg)](specs/001-sofia-engine-modernization/threat-model.md)
-[![Organization](https://img.shields.io/badge/developed%20by-Rootcastle%20Engineering-black.svg)](https://rootcastle.com/)
+**Scientific signal intelligence, on-device learning and an open model ecosystem.**
 
-[**Documentation**](https://rootcastleco.github.io/sofia-ai/) | [**Hugging Face Model**](https://huggingface.co/rootcastleengineering/sofia) | [**Hugging Face Bucket**](https://huggingface.co/buckets/rootcastleengineering/sofia-bucket) | [**GitHub Wiki**](https://github.com/rootcastleco/sofia-ai/wiki) | [**NPM Package**](https://www.npmjs.com/package/@rootcastle/sofia-engine) | [**REI SignalLab**](https://github.com/rootcastleco/rei-signallab) | [**Rootcastle**](https://rootcastle.com/)
+[![License](https://img.shields.io/badge/license-Apache--2.0-a8b5cc?style=flat-square)](LICENSE) [![Core](https://img.shields.io/badge/runtime-NumPy-64ead3?style=flat-square)](pyproject.toml) [![Distilled release](https://img.shields.io/badge/companion_models-v0.1.0-60a5fa?style=flat-square)](https://github.com/rootcastleco/sofia-distilled/releases/tag/v0.1.0) [![Edge checkpoint](https://img.shields.io/badge/Hugging_Face-Sofia_Edge-f1b971?style=flat-square)](https://huggingface.co/rootcastleengineering/sofia-edge-distilled-v0.1) [![Chat checkpoint](https://img.shields.io/badge/Hugging_Face-Sofia_Chat-f1b971?style=flat-square)](https://huggingface.co/rootcastleengineering/sofia-chat-distilled-v0.1)
+
+[**Trained models**](#trained-models--sofia-distilled) · [**Architecture**](#system-architecture) · [**Installation**](#installation) · [**Quickstart**](#quickstart) · [**Documentation**](https://rootcastleco.github.io/sofia-ai/)
+
+Developed by **[Rootcastle Engineering & Innovation](https://rootcastle.com/)**
+
+</div>
+
+<details>
+<summary><strong>Explore the runtime ecosystem, integrations and packages</strong></summary>
+
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE) [![DOI](https://img.shields.io/badge/DOI-10.57967%2Fhf%2F10549-blue.svg)](https://doi.org/10.57967/hf/10549) [![Hugging Face Model](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Model%20Registry-yellow.svg)](https://huggingface.co/rootcastleengineering/sofia) [![Hugging Face Bucket](https://img.shields.io/badge/%F0%9F%A4%97%20HF%20Bucket-Storage%20Bucket-orange.svg)](https://huggingface.co/buckets/rootcastleengineering/sofia-bucket) [![Python Version](https://img.shields.io/badge/python-3.11%20%7C%203.12%20%7C%203.13%20%7C%203.14-blue.svg)](pyproject.toml) [![NPM Version](https://img.shields.io/npm/v/@rootcastle/sofia-engine.svg?color=cb3837)](https://www.npmjs.com/package/@rootcastle/sofia-engine) [![Core Dependencies](https://img.shields.io/badge/runtime%20deps-NumPy%20only-brightgreen.svg)](pyproject.toml) [![Test Coverage](https://img.shields.io/badge/coverage-%E2%89%A585%25%20enforced-success.svg)](pyproject.toml) [![AI Backends](https://img.shields.io/badge/AI%20Copilot-NVIDIA%20NIM%20%7C%20OpenRouter-76b900.svg)](docs/AI-Engine-&-Copilot.md) [![Assembly Self-Training](https://img.shields.io/badge/learning-Assembly%20VM%20%7C%20In--Situ%20SGD-red.svg)](docs/Assembly-Neural-Engine.md) [![Auto Fine-Tuning](https://img.shields.io/badge/fine--tuning-Automated%20API%20%7C%20JSONL-orange.svg)](docs/Automatic-Fine-Tuning.md) [![Quantum Emulation](https://img.shields.io/badge/quantum-statevector%20%7C%20circuits%20%7C%20kernels-purple.svg)](src/sofia_ai/quantum/) [![Multi-Domain DSP](https://img.shields.io/badge/DSP-Vibration%20%7C%20Electrical%20%7C%20Acoustic-blue.svg)](src/sofia_ai/signal/) [![Embedded C99](https://img.shields.io/badge/embedded-C99%20%7C%20Q16.16-orange.svg)](embedded/) [![Security Audited](https://img.shields.io/badge/security-threat%20modeled%20%7C%20no%20pickle-red.svg)](specs/001-sofia-engine-modernization/threat-model.md) [![Organization](https://img.shields.io/badge/developed%20by-Rootcastle%20Engineering-black.svg)](https://rootcastle.com/)
+
+[Model registry](https://huggingface.co/rootcastleengineering/sofia) · [Storage bucket](https://huggingface.co/buckets/rootcastleengineering/sofia-bucket) · [Wiki](https://github.com/rootcastleco/sofia-ai/wiki) · [npm package](https://www.npmjs.com/package/@rootcastle/sofia-engine) · [REI SignalLab](https://github.com/rootcastleco/rei-signallab)
+
+</details>
 
 ---
 
-</div>
+## Trained models · Sofia Distilled
+
+**Two downloadable research checkpoints now accompany the Sofia ecosystem.** [Sofia Distilled](https://github.com/rootcastleco/sofia-distilled) provides the training code, original data, model cards, measured baselines and public-download audits. These models are a separate companion package; they are not automatically registered as backends in this runtime.
+
+| | **Sofia Edge** | **Sofia Chat** |
+| --- | --- | --- |
+| Model | Synthetic vibration classifier | Experimental English technical chat |
+| Architecture | 14 → 16 → 5 ReLU MLP | 18-layer Qwen-derived transformer |
+| Parameters | **325** | **404,558,464** |
+| Distillation | Verified product-kernel ridge teacher → small MLP | Teacher-token KL + reference CE + product-kernel alignment |
+| Published weights | NumPy `.npz`, approximately **2.86 kB** | Merged FP16 `.safetensors`, approximately **809 MB** |
+| Download | [Edge checkpoint ↗](https://huggingface.co/rootcastleengineering/sofia-edge-distilled-v0.1) | [Chat checkpoint ↗](https://huggingface.co/rootcastleengineering/sofia-chat-distilled-v0.1) |
+| Documentation | [Edge model card](https://github.com/rootcastleco/sofia-distilled/blob/main/model_cards/edge.md) | [Chat model card](https://github.com/rootcastleco/sofia-distilled/blob/main/model_cards/chat.md) |
+
+> [!IMPORTANT]
+> **Experimental checkpoints.** Edge has no field diagnostic validation. Chat generates factual errors and inherits Qwen pretraining; it is not a foundation model pretrained from random initialization. The companion CLI exposes no machinery control interface. These release results do not establish industrial readiness or quantum computational advantage.
+
+### Measured results and evidence
+
+| Release measurement | Result | Scope |
+| --- | ---: | --- |
+| Edge test accuracy / balanced accuracy | **99.933%** | 1,500 balanced synthetic vibration examples |
+| Edge supervised-only control | **100.000%** | Same initialization, data and optimization budget; no distillation quality advantage claimed |
+| Chat parameter reduction | **18.11%** | 404,558,464 student versus 494,032,768 teacher parameters |
+| Chat test reference perplexity | **10,327.21 → 84.14** | Pruned baseline versus distilled checkpoint on a narrow reference bank; not a factuality benchmark |
+| Companion local test suite at v0.1.0 | **25 passed** | Sofia Distilled tests; separate from this runtime's test suite |
+| Kernel experiment rerun | **810 arrays exactly equal** | Independent same-environment rerun |
+| Public release download audits | **14 Edge + 22 Chat files** | Downloaded bytes matched their SHA-256 digests, including full Chat weights |
+
+[**Browse the v0.1.0 release**](https://github.com/rootcastleco/sofia-distilled/releases/tag/v0.1.0) · [**Inspect experiment records**](https://github.com/rootcastleco/sofia-distilled/tree/main/artifacts) · [**Read actual Chat test answers**](https://github.com/rootcastleco/sofia-distilled/blob/main/artifacts/chat/test_generations.json)
+
+### Verifiable kernel principle
+
+The companion experiments follow [**Quantum Artificial Intelligence with Verifiable Kernels**](https://www.academia.edu/175377730/Quantum_Artificial_Intelligence_with_Verifiable_Kernels), by **Batuhan Ayribas (2026)**. Their product-rotation kernel has an efficient exact classical expression:
+
+$$K_s(x,z)=\prod_{j=1}^{d}\cos^2\left(\frac{s(x_j-z_j)}{2}\right).$$
+
+Edge uses this geometry in its ridge teacher. Chat adds a kernel representation-alignment penalty to token distillation. The numerical audits check classical/state-overlap equivalence, terminal-unitary invariance, global depolarization and matched ridge predictions; finite-shot SWAP estimates are evaluated separately. All computations use ordinary CPU/GPU hardware. The Chat alignment term is an engineering adaptation, not a transformer-quality result proved by the manuscript.
+
+[Scientific protocol and limitations →](https://github.com/rootcastleco/sofia-distilled/blob/main/docs/VERIFICATION.md)
+
+```mermaid
+flowchart LR
+    E["Sofia Engine: signal intelligence runtime"] -.-> D["Sofia Distilled: separate training and inference package"]
+    D --> M["Sofia Edge: synthetic signal evidence"]
+    D --> C["Sofia Chat: experimental technical prose"]
+    M --> A["Companion CLI: structured evidence + unverified explanation"]
+    C --> A
+    style E fill:#101e32,stroke:#64ead3,color:#e6edf7
+    style D fill:#101e32,stroke:#60a5fa,color:#e6edf7
+    style A fill:#17243a,stroke:#f1b971,color:#e6edf7
+```
+
+### Try the companion models
+
+```bash
+git clone https://github.com/rootcastleco/sofia-distilled.git
+cd sofia-distilled
+pip install -e '.[hub]'
+sofia-distilled edge --demo-class 3
+```
+
+For Chat dependencies, Hugging Face inference, the combined CLI and full training commands, follow the [Sofia Distilled quick start](https://github.com/rootcastleco/sofia-distilled#quick-start).
+
+---
 
 ## Executive Overview
 

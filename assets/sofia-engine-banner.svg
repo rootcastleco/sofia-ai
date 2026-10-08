@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="340" viewBox="0 0 1120 340" role="img" aria-labelledby="title desc">
+  <title id="title">Sofia Engine</title>
+  <desc id="desc">Scientific signals, reproducible systems. Sofia Edge and Sofia Chat with verifiable kernel controls. Rootcastle Engineering and Innovation research release.</desc>
+  <defs>
+    <linearGradient id="bg" x2="1" y2="1"><stop stop-color="#0a1324"/><stop offset="1" stop-color="#152b42"/></linearGradient>
+    <linearGradient id="line"><stop stop-color="#64ead3"/><stop offset="1" stop-color="#60a5fa"/></linearGradient>
+    <pattern id="grid" width="28" height="28" patternUnits="userSpaceOnUse"><circle cx="1" cy="1" r="1" fill="#a8b5cc" opacity=".12"/></pattern>
+  </defs>
+  <rect width="1120" height="340" rx="20" fill="url(#bg)"/>
+  <rect width="1120" height="340" rx="20" fill="url(#grid)"/>
+  <rect x="1" y="1" width="1118" height="338" rx="19" fill="none" stroke="#334a65"/>
+  <path d="M48 60H92" stroke="#64ead3" stroke-width="4" stroke-linecap="round"/>
+  <g font-family="Segoe UI,Arial,sans-serif">
+    <text x="108" y="65" fill="#a8b5cc" font-size="14" letter-spacing="2.2">ROOTCASTLE ENGINEERING &amp; INNOVATION</text>
+    <text x="48" y="149" fill="#f0f6ff" font-size="58" font-weight="700" letter-spacing="-2">Sofia Engine</text>
+    <text x="50" y="190" fill="#c5d5e8" font-size="24">Scientific signals. Reproducible systems.</text>
+    <text x="50" y="224" fill="#91a8c1" font-size="18">Signal analysis, edge intelligence and companion models.</text>
+    <rect x="48" y="266" width="135" height="30" rx="15" fill="#1c3a43"/>
+    <text x="115" y="286" text-anchor="middle" fill="#64ead3" font-size="13" font-weight="600">SIGNAL RUNTIME</text>
+    <rect x="193" y="266" width="149" height="30" rx="15" fill="#203650"/>
+    <text x="267" y="286" text-anchor="middle" fill="#95c7ff" font-size="12" font-weight="600">VERIFIABLE CONTROLS</text>
+    <text x="358" y="286" fill="#91a8c1" font-size="13">COMPANION MODELS · v0.1</text>
+    <rect x="715" y="57" width="353" height="240" rx="18" fill="#0b182a" stroke="#334a65"/>
+    <text x="739" y="91" fill="#91a8c1" font-size="12" letter-spacing="1.8">OPEN MODEL ECOSYSTEM</text>
+    <path d="M751 135C769 98 788 172 807 135S845 172 864 135S902 172 921 135S959 172 978 135S1016 172 1035 135" fill="none" stroke="url(#line)" stroke-width="2.5"/>
+    <path d="M891 156V181M809 181H978M809 181V198M978 181V198" fill="none" stroke="#526e8d" stroke-width="1.5"/>
+    <rect x="738" y="198" width="145" height="71" rx="12" fill="#15363d" stroke="#366e71"/>
+    <text x="810" y="225" text-anchor="middle" fill="#64ead3" font-size="17" font-weight="700">SOFIA EDGE</text>
+    <text x="810" y="248" text-anchor="middle" fill="#c5d5e8" font-size="14">325 parameters</text>
+    <rect x="901" y="198" width="145" height="71" rx="12" fill="#1a304a" stroke="#3c5b86"/>
+    <text x="974" y="225" text-anchor="middle" fill="#95c7ff" font-size="17" font-weight="700">SOFIA CHAT</text>
+    <text x="974" y="248" text-anchor="middle" fill="#c5d5e8" font-size="14">405M parameters</text>
+  </g>
+</svg>
